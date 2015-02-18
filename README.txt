@@ -72,3 +72,12 @@ RTSM_VE_Cortex-A15x1 linux-system.axf
 Passing a command line to linux-system.axf is allowed, and any
 kernel/initrd/dtb/commandline specified will override the compiled-in
 version.
+
+
+ARM TrustZone Update
+=======
+
+I am adding a tiny ARM TrustZone monitor to boot-wrapper.
+test.sh is used for compilation.
+
+For details, please contact Dongli Zhang (dongli.zhang0129@gmail.com)

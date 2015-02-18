@@ -41,6 +41,31 @@ static struct loader_info loader;
 #define PLAT_ID 827 /* RealView/EB */
 #endif
 
+volatile unsigned char * const UART0_BASE = (unsigned char *)0x1c090000;
+
+void test_print(void)
+{
+	*UART0_BASE = 'B';
+	//semi_write0("[DEBUG] test_print\n");
+	//semi_write0("[DEBUG] test_print2\n");
+}
+
+void test_use_print(void)
+{
+	*UART0_BASE = 'A';
+	semi_write0("[DEBUG] test_use_print\n");
+}
+
+void test_undef(void)
+{
+	semi_write0("[DEBUG] test_undef\n");
+}
+
+void test_new_undef(void)
+{
+	semi_write0("[DEBUG] test_new_undef\n");
+}
+
 void c_start(void)
 {
 	/* Main C entry point */
@@ -61,5 +86,45 @@ void c_start(void)
 		boot_kernel(&loader, 0, PLAT_ID, loader.atags_start, 0);
 	}
 
+	while(1)
+	{
+		semi_write0("[Fast Model] This is normal world\n");
+		asm volatile(
+				".arch_extension sec\n\t"
+				"smc #0\n\t") ;
+	}
+
 	semi_write0("[bootwrapper] ERROR: returned from boot_kernel\n");
+}
+
+void Normal_World(void)
+{
+	/*while(1)
+	{
+		semi_write0("[Fast Model] This is normal world\n");
+		asm volatile(
+				".arch_extension sec\n\t"
+				"smc #0\n\t") ;
+	}*/
+
+	semi_write0("[bootwrapper] Dongli Boot Kernel!\n");
+	c_start();
+}
+
+void bootmain(void)
+{
+	monitorInit(Normal_World);
+	semi_write0("[Fast Model] Install Monitor Successfully\n");
+	
+	int i;
+	//for(i=0; i<10; i++)
+	while(1)
+	{
+		semi_write0("[Fast Model] This is secure world\n");
+		asm volatile(
+			".arch_extension sec\n\t"
+			"smc #0\n\t");
+	};
+
+	while(1);
 }
